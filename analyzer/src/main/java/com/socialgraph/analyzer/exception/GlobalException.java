@@ -20,4 +20,22 @@ public class GlobalException {
     {
         return ResponseEntity.status(ex.status).body(new PostNotFoundDto(ex.status.toString(), ex.getMessage()));
     }
+    
+    @ExceptionHandler(DuplicateFriendRequestException.class)
+    public ResponseEntity<String> resolveDuplicateFriendRequestException(DuplicateFriendRequestException ex)
+    {
+        return ResponseEntity.badRequest().body(ex.getMessage());
+    }   
+
+    @ExceptionHandler(CannotFriendYourselfException.class)
+    public ResponseEntity<String> resolveCannotFriendYourselfException(CannotFriendYourselfException ex)
+    {
+        return ResponseEntity.badRequest().body(ex.getMessage());
+    }
+
+    @ExceptionHandler(FriendshipNotFoundException.class)
+    public ResponseEntity<String> resolveFriendshipNotFoundException(FriendshipNotFoundException ex)
+    {
+        return ResponseEntity.badRequest().body(ex.getMessage());
+    }
 }
