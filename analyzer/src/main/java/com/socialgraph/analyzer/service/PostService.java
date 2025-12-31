@@ -1,5 +1,6 @@
 package com.socialgraph.analyzer.service;
 
+import com.socialgraph.analyzer.dto.PostRequestDto;
 import com.socialgraph.analyzer.entity.Post;
 import com.socialgraph.analyzer.entity.User;
 import com.socialgraph.analyzer.exception.PostNotFoundException;
@@ -52,15 +53,15 @@ public class PostService {
     }
 
     @Transactional
-    public void updatePostById(Long id, Post post)
+    public void updatePostById(Long id, PostRequestDto post)
     {
         Post postFound = postRepository.findById(id).orElseThrow
             (
                 () -> new PostNotFoundException("This Post with Id: " + id + " not Found",
                 HttpStatus.BAD_GATEWAY)
             );
-        postFound.setPostContent(post.getPostContent());
-        postFound.setPostImageUrl(post.getPostImageUrl());
+        postFound.setPostContent(post.getContent());
+        postFound.setPostImageUrl(post.getImageUrl());
         postFound.setPrivacy(post.getPrivacy());
         postFound.setUpdatedAt(LocalDateTime.now());
         postRepository.save(postFound);
