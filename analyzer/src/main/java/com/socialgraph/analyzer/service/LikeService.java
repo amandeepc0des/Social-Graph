@@ -2,6 +2,7 @@ package com.socialgraph.analyzer.service;
 
 import com.socialgraph.analyzer.dto.LikeRequestDto;
 import com.socialgraph.analyzer.entity.Like;
+import com.socialgraph.analyzer.entity.NotificationType;
 import com.socialgraph.analyzer.entity.Post;
 import com.socialgraph.analyzer.entity.User;
 import com.socialgraph.analyzer.exception.PostNotFoundException;
@@ -23,11 +24,13 @@ public class LikeService {
     private final LikeRepository likeRepository;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final NotificationService notificationService;
 
-    public LikeService(LikeRepository likeRepository, UserRepository userRepository, PostRepository postRepository) {
+    public LikeService(LikeRepository likeRepository, UserRepository userRepository, PostRepository postRepository, NotificationService notificationService) {
         this.likeRepository = likeRepository;
         this.userRepository = userRepository;
         this.postRepository = postRepository;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -41,7 +44,8 @@ public class LikeService {
         like.setUser(user);
         like.setPost(post);
         like.setLikedAt(LocalDateTime.now());
-
+        String likeMessage = user.getUserName() + " Liked your post";
+        notificationService.CreateNotification(like.getPost().getUser().getId(), NotificationType.LIKE, user.getId(), likeMessage);
         return likeRepository.save(like);
     }
 

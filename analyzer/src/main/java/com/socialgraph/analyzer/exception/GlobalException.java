@@ -38,4 +38,10 @@ public class GlobalException {
     {
         return ResponseEntity.badRequest().body(ex.getMessage());
     }
+
+    @ExceptionHandler(NotificationNotFoundException.class)
+    public ResponseEntity<String> resolveNotificationNotFoundException(NotificationNotFoundException ex)
+    {
+        return ResponseEntity.badRequest().body(ex.getMessage());
+    }
 }

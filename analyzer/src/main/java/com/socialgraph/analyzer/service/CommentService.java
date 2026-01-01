@@ -1,6 +1,7 @@
 package com.socialgraph.analyzer.service;
 
 import com.socialgraph.analyzer.entity.Comment;
+import com.socialgraph.analyzer.entity.NotificationType;
 import com.socialgraph.analyzer.entity.Post;
 import com.socialgraph.analyzer.entity.User;
 import com.socialgraph.analyzer.exception.PostNotFoundException;
@@ -22,11 +23,13 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final NotificationService notificationService;
 
-    public CommentService(CommentRepository commentRepository, UserRepository userRepository, PostRepository postRepository) {
+    public CommentService(CommentRepository commentRepository, UserRepository userRepository, PostRepository postRepository, NotificationService notificationService) {
         this.commentRepository = commentRepository;
         this.userRepository = userRepository;
         this.postRepository = postRepository;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -45,7 +48,8 @@ public class CommentService {
 
         comment.setUser(user);
         comment.setPost(post);
-
+        String commentNotification = user.getUserName() + " added on your Post";
+        notificationService.CreateNotification(post.getUser().getId(), NotificationType.COMMENT, user.getId(), commentNotification);
         return commentRepository.save(comment);
     }
 

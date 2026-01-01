@@ -2,6 +2,7 @@ package com.socialgraph.analyzer.service;
 
 import com.socialgraph.analyzer.entity.Friendship;
 import com.socialgraph.analyzer.entity.FriendshipStatus;
+import com.socialgraph.analyzer.entity.NotificationType;
 import com.socialgraph.analyzer.entity.User;
 import com.socialgraph.analyzer.exception.CannotFriendYourselfException;
 import com.socialgraph.analyzer.exception.DuplicateFriendRequestException;
@@ -22,11 +23,13 @@ public class FriendshipService {
 
     FriendshipRepository friendshipRepository;
     UserRepository userRepository;
+    NotificationService notificationService;
 
-    public FriendshipService(FriendshipRepository friendshipRepository, UserRepository userRepository)
+    public FriendshipService(FriendshipRepository friendshipRepository, UserRepository userRepository, NotificationService notificationService)
     {
         this.friendshipRepository = friendshipRepository;
         this.userRepository = userRepository;
+        this.notificationService = notificationService;
     }
 
     // send friend request
@@ -52,6 +55,8 @@ public class FriendshipService {
         friendship.setFriendshipStatus(FriendshipStatus.PENDING);
         friendship.setCreatedAt(LocalDateTime.now());
         friendship.setUpdatedAt(LocalDateTime.now());
+        String friendRequestMessage = fromUser.getUserName() + " Sent you friend Request";
+        notificationService.CreateNotification(toUserId, NotificationType.FRIEND_REQUEST, fromUserId, friendRequestMessage);
         return friendshipRepository.save(friendship);
     }
 
@@ -62,6 +67,8 @@ public class FriendshipService {
                 .orElseThrow(() -> new FriendshipNotFoundException("Friendship with id " + friendshipId + " not found"));
         friendship.setFriendshipStatus(FriendshipStatus.ACCEPTED);
         friendship.setUpdatedAt(LocalDateTime.now());
+        String requestAcceptedMessage = friendship.getToUserId().getUserName() + " Accepted your friend Request";
+        notificationService.CreateNotification(friendship.getFromUserId().getId(), NotificationType.REQUEST_ACCEPTED,friendship.getToUserId().getId(), requestAcceptedMessage);
         return friendshipRepository.save(friendship);
     }
 

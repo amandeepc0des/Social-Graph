@@ -6,6 +6,8 @@ import com.socialgraph.analyzer.service.PostService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(value = "/posts")
 public class PostController {
@@ -51,5 +53,11 @@ public class PostController {
     {
         postService.removePostById(id);
         return ResponseEntity.ok("Post with id: " + id + " is removed Successfully.");
+    }
+
+    @GetMapping("/{owner}/{viewer}")
+    public ResponseEntity<List<Post>> getPostsByViewer(@PathVariable Long owner, @PathVariable Long viewer)
+    {
+        return ResponseEntity.ok(postService.getPostsByViewer(owner, viewer));
     }
 }
